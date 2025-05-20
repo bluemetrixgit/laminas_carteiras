@@ -6,11 +6,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 # ========== CONFIGURAÇÃO INICIAL DO APP ==========
-st.set_page_config(
-    page_title="Lâmina Bluemetrix",
-    page_icon="logo.png",  # Arquivo na mesma pasta do app
-    layout="wide"
-)
+st.set_page_config(layout="wide")
 st.markdown("""<style>
     .block-container {
         padding-top: 1rem;
