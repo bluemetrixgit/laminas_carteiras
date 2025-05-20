@@ -8,8 +8,25 @@ import matplotlib.pyplot as plt
 # ========== CONFIGURAÇÃO INICIAL DO APP ==========
 st.set_page_config(layout="wide")
 st.markdown("""<style>
-    .block-container {padding-top: 1rem; padding-bottom: 1rem;}
-    .stSelectbox, .stDateInput {margin-bottom: -0.5rem;}
+    .block-container {
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+    .stSelectbox, .stDateInput, .stDownloadButton {
+        margin-bottom: 0.2rem;
+    }
+    .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .stDataFrame, .stImage {
+        margin-top: -0.5rem;
+    }
+    .css-1v0mbdj, .stApp {
+        background-color: #111;
+    }
 </style>""", unsafe_allow_html=True)
 st.title("📊 Lâmina Bluemetrix – Análise de Carteiras (20/05/2025)")
 
