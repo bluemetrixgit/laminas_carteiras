@@ -155,7 +155,7 @@ fig_path = "grafico_rentabilidade_bluemetrix.png"
 fig.savefig(fig_path, dpi=300, bbox_inches="tight")
 plt.close()
 st.markdown("### 📈 Evolução Patrimonial")
-st.image(fig_path, use_column_width=True)
+st.image(fig_path, use_container_width=True)
 with open(fig_path, "rb") as f:
     st.download_button(
         label="⬇️ Baixar Gráfico em PNG",
