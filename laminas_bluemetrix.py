@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # ========== CONFIGURAÇÃO INICIAL DO APP ==========
 st.set_page_config(
     page_title="Lâmina Bluemetrix",
-    page_icon="📈",
+    page_icon="logo.png",
     layout="wide"
 )
 
