@@ -6,7 +6,12 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 # ========== CONFIGURAÇÃO INICIAL DO APP ==========
-st.set_page_config(layout="wide")
+st.set_page_config(
+    page_title="Lâmina Bluemetrix",
+    page_icon="📈",
+    layout="wide"
+)
+
 st.markdown("""<style>
     .block-container {
         padding-top: 1rem;
@@ -24,13 +29,26 @@ st.markdown("""<style>
     .stDataFrame, .stImage {
         margin-top: -0.5rem;
     }
-    .css-1v0mbdj, .stApp {
-        background-color: #111;
+    .stApp {
+        background-color: #111111;
+        color: #f5f5f5;
+    }
+    table {
+        background-color: #1e1e1e;
+        color: #f5f5f5;
+    }
+    thead tr th {
+        background-color: #2c2c2c;
+        color: #f5f5f5;
+    }
+    tbody tr td {
+        color: #f5f5f5;
     }
 </style>""", unsafe_allow_html=True)
+
 st.title("📊 Lâmina Bluemetrix – Análise de Carteiras (20/05/2025)")
 
-# Input de seleção de carteira e data de início
+# ========== INPUTS ==========
 col1, col2 = st.columns([1, 1])
 with col1:
     opcao_carteira = st.selectbox("Selecione a carteira:", ["Carteira Cripto", "Carteira Internacional"])
@@ -41,43 +59,21 @@ inicio = data_inicio.strftime("%Y-%m-%d")
 fim = dt.datetime.today()
 valor_inicial = 100000
 
-# Pesos das carteiras
+# ========== PESOS ==========
 pesos_cripto = {
-    "BTC-USD": 0.65,
-    "ETH-USD": 0.10,
-    "SOL-USD": 0.025,
-    "LTC-USD": 0.025,
-    "XRP-USD": 0.025,
-    "ADA-USD": 0.05,
-    "DOGE-USD": 0.025,
-    "USDT-USD": 0.05,
-    "CASH": 0.05,
+    "BTC-USD": 0.65, "ETH-USD": 0.10, "SOL-USD": 0.025,
+    "LTC-USD": 0.025, "XRP-USD": 0.025, "ADA-USD": 0.05,
+    "DOGE-USD": 0.025, "USDT-USD": 0.05, "CASH": 0.05,
 }
-
 pesos_internacional = {
-    "AMZN": 0.10,
-    "BK": 0.05,
-    "BRK-B": 0.10,
-    "CRM": 0.05,
-    "CSCO": 0.05,
-    "CVX": 0.05,
-    "GOOGL": 0.10,
-    "IVV": 0.15,
-    "MSFT": 0.10,
-    "NVDA": 0.08,
-    "PYPL": 0.07,
-    "SOXX": 0.10,
+    "AMZN": 0.10, "BK": 0.05, "BRK-B": 0.10, "CRM": 0.05,
+    "CSCO": 0.05, "CVX": 0.05, "GOOGL": 0.10, "IVV": 0.15,
+    "MSFT": 0.10, "NVDA": 0.08, "PYPL": 0.07, "SOXX": 0.10,
 }
+pesos = pesos_cripto if opcao_carteira == "Carteira Cripto" else pesos_internacional
+benchmark_ticker = "HASH11.SA" if opcao_carteira == "Carteira Cripto" else "^GSPC"
 
-# Escolher carteira e benchmark
-if opcao_carteira == "Carteira Cripto":
-    pesos = pesos_cripto
-    benchmark_ticker = "HASH11.SA"
-else:
-    pesos = pesos_internacional
-    benchmark_ticker = "^GSPC"
-
-# ===== DOWNLOAD DE DADOS =====
+# ========== DADOS ==========
 precos = pd.DataFrame()
 for ticker in pesos:
     if ticker == "CASH":
@@ -86,21 +82,17 @@ for ticker in pesos:
     df.name = ticker
     precos = precos.join(df, how="outer") if not precos.empty else df
 
-# Preencher valor "CASH" como CDI aproximado usando IRFM11
 if "CASH" in pesos:
     cdi = yf.download("IRFM11.SA", start=inicio, end=fim)["Close"]
     precos["CASH"] = cdi
 
-# Benchmark
 benchmark = yf.download(benchmark_ticker, start=inicio, end=fim)["Close"]
-
 precos.dropna(inplace=True)
 retorno = precos.pct_change().dropna()
 ret_carteira = (retorno * pd.Series(pesos)).sum(axis=1)
 
 carteira = (1 + ret_carteira).cumprod() * valor_inicial
 benchmark_acum = (1 + benchmark.pct_change()).cumprod() * valor_inicial
-
 idx_comum = carteira.index.intersection(benchmark_acum.index)
 carteira = carteira.loc[idx_comum]
 benchmark_acum = benchmark_acum.loc[idx_comum]
@@ -108,13 +100,11 @@ benchmark_acum = benchmark_acum.loc[idx_comum]
 nome_benchmark = "HASH11" if opcao_carteira == "Carteira Cripto" else "S&P500"
 df_final = pd.DataFrame({"Carteira": carteira.squeeze(), nome_benchmark: benchmark_acum.squeeze()}).dropna()
 
-# ===== TABELA DE RENTABILIDADE =====
+# ========== TABELA ==========
 df_mensal = df_final.resample("M").last()
 ret_mensal = df_mensal.pct_change().dropna() * 100
 ult_12m = ret_mensal.iloc[-12:]
-ult_12m.columns.name = None
 ult_12m.index = ult_12m.index.strftime("%b/%Y")
-
 ano_atual = dt.datetime.today().year
 inicio_ano = f"{ano_atual}-01-01"
 df_ytd = df_final[df_final.index >= inicio_ano]
@@ -122,7 +112,7 @@ df_ytd = df_final[df_final.index >= inicio_ano]
 consolidado = pd.DataFrame(index=["Carteira", nome_benchmark])
 consolidado["Ano"] = [
     ((df_ytd["Carteira"].iloc[-1] / df_ytd["Carteira"].iloc[0]) - 1) * 100,
-    ((df_ytd[nome_benchmark].iloc[-1] / df_ytd[nome_benchmark].iloc[0]) - 1) * 100
+    ((df_ytd[nome_benchmark].iloc[-1] / df_ytd[nome_benchmark].iloc[0]) - 1) * 100,
 ]
 consolidado["12 Meses"] = [
     ret_mensal["Carteira"].iloc[-12:].sum(),
@@ -139,7 +129,7 @@ for col in reversed(ult_12m.index):
     ]
 tabela_lamina = consolidado.round(2)
 
-# ===== INDICADORES =====
+# ========== INDICADORES ==========
 ret_diario = df_final.pct_change().dropna()
 def max_drawdown(series):
     cum_max = series.cummax()
@@ -153,7 +143,7 @@ indicadores["Sharpe (CDI=9%)"] = (indicadores["Retorno Anual (%)"] - 9) / indica
 indicadores["Máx. Drawdown (%)"] = [max_drawdown(df_final["Carteira"]), max_drawdown(df_final[nome_benchmark])]
 indicadores = indicadores.round(2)
 
-# ===== GRÁFICO =====
+# ========== GRÁFICO ==========
 fig, ax = plt.subplots(figsize=(7, 3))
 ax.plot(df_final.index, df_final["Carteira"], label="Carteira", color="#1f4e79", linewidth=1.2)
 ax.plot(df_final.index, df_final[nome_benchmark], label=nome_benchmark, color="#b30000", linewidth=1.2)
@@ -167,29 +157,34 @@ ax.set_title("Evolução Patrimonial", fontsize=10)
 ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9, frameon=False)
 fig.tight_layout()
 
-# Salvar imagem e mostrar com botão de download
+# ========== EXIBIÇÃO ==========
 fig_path = "grafico_rentabilidade_bluemetrix.png"
 fig.savefig(fig_path, dpi=300, bbox_inches="tight")
 plt.close()
+
 st.markdown("### 📈 Evolução Patrimonial")
 st.image(fig_path, use_container_width=True)
 with open(fig_path, "rb") as f:
-    st.download_button(
-        label="⬇️ Baixar Gráfico em PNG",
-        data=f,
-        file_name="grafico_bluemetrix.png",
-        mime="image/png"
-    )
+    st.download_button("⬇️ Baixar Gráfico em PNG", f, "grafico_bluemetrix.png", "image/png")
 
-# ===== EXIBIÇÃO DAS TABELAS =====
 st.markdown("### 📊 Tabela de Rentabilidade Consolidada")
-st.dataframe(tabela_lamina.style.set_table_styles([
-    {'selector': 'th', 'props': [('font-size', '10px')]},
-    {'selector': 'td', 'props': [('font-size', '10px')]}
-]), use_container_width=True)
+st.dataframe(
+    tabela_lamina.style.set_properties(
+        **{'background-color': '#1e1e1e', 'color': '#f5f5f5', 'border-color': '#444'}
+    ).set_table_styles([
+        {'selector': 'th', 'props': [('font-size', '10px'), ('background-color', '#2c2c2c'), ('color', '#f5f5f5')]},
+        {'selector': 'td', 'props': [('font-size', '10px'), ('color', '#f5f5f5')]}
+    ]),
+    use_container_width=True
+)
 
 st.markdown("### 📌 Indicadores Técnicos")
-st.dataframe(indicadores.style.set_table_styles([
-    {'selector': 'th', 'props': [('font-size', '10px')]},
-    {'selector': 'td', 'props': [('font-size', '10px')]}
-]), use_container_width=True)
+st.dataframe(
+    indicadores.style.set_properties(
+        **{'background-color': '#1e1e1e', 'color': '#f5f5f5', 'border-color': '#444'}
+    ).set_table_styles([
+        {'selector': 'th', 'props': [('font-size', '10px'), ('background-color', '#2c2c2c'), ('color', '#f5f5f5')]},
+        {'selector': 'td', 'props': [('font-size', '10px'), ('color', '#f5f5f5')]}
+    ]),
+    use_container_width=True
+)
