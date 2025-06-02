@@ -46,20 +46,20 @@ st.markdown("""<style>
     }
 </style>""", unsafe_allow_html=True)
 
-st.title("📊 Lâmina Bluemetrix – Análise de Carteiras (20/05/2025)")
+st.title("📊 Lâmina Bluemetrix – Análise de Carteiras")
 
-# ========== INPUTS ==========
+# INPUTS
 col1, col2 = st.columns([1, 1])
 with col1:
     opcao_carteira = st.selectbox("Selecione a carteira:", ["Carteira Cripto", "Carteira Internacional"])
 with col2:
-    data_inicio = st.date_input("Selecione a data de início:", value=dt.date(2022, 5, 1))
+    data_inicio = st.date_input("Data de início:", value=dt.date(2022, 5, 1))
+    data_fim = st.date_input("Data de fim:", value=dt.date.today())
 
 inicio = data_inicio.strftime("%Y-%m-%d")
-fim = dt.datetime.today()
+fim = data_fim.strftime("%Y-%m-%d")
 valor_inicial = 100000
 
-# ========== PESOS ==========
 pesos_cripto = {
     "BTC-USD": 0.65, "ETH-USD": 0.10, "SOL-USD": 0.025,
     "LTC-USD": 0.025, "XRP-USD": 0.025, "ADA-USD": 0.05,
@@ -73,7 +73,6 @@ pesos_internacional = {
 pesos = pesos_cripto if opcao_carteira == "Carteira Cripto" else pesos_internacional
 benchmark_ticker = "HASH11.SA" if opcao_carteira == "Carteira Cripto" else "^GSPC"
 
-# ========== DADOS ==========
 precos = pd.DataFrame()
 for ticker in pesos:
     if ticker == "CASH":
@@ -100,11 +99,10 @@ benchmark_acum = benchmark_acum.loc[idx_comum]
 nome_benchmark = "HASH11" if opcao_carteira == "Carteira Cripto" else "S&P500"
 df_final = pd.DataFrame({"Carteira": carteira.squeeze(), nome_benchmark: benchmark_acum.squeeze()}).dropna()
 
-# ========== TABELA ==========
 df_mensal = df_final.resample("M").last()
 ret_mensal = df_mensal.pct_change().dropna() * 100
 ult_12m = ret_mensal.iloc[-12:]
-ult_12m.index = ult_12m.index.strftime("%b/%Y")
+ult_12m.index = pd.to_datetime(ult_12m.index).strftime("%b/%y")
 ano_atual = dt.datetime.today().year
 inicio_ano = f"{ano_atual}-01-01"
 df_ytd = df_final[df_final.index >= inicio_ano]
@@ -129,7 +127,6 @@ for col in reversed(ult_12m.index):
     ]
 tabela_lamina = consolidado.round(2)
 
-# ========== INDICADORES ==========
 ret_diario = df_final.pct_change().dropna()
 def max_drawdown(series):
     cum_max = series.cummax()
@@ -143,48 +140,48 @@ indicadores["Sharpe (CDI=9%)"] = (indicadores["Retorno Anual (%)"] - 9) / indica
 indicadores["Máx. Drawdown (%)"] = [max_drawdown(df_final["Carteira"]), max_drawdown(df_final[nome_benchmark])]
 indicadores = indicadores.round(2)
 
-# ========== GRÁFICO ==========
 fig, ax = plt.subplots(figsize=(7, 3))
-ax.plot(df_final.index, df_final["Carteira"], label="Carteira", color="#1f4e79", linewidth=1.2)
-ax.plot(df_final.index, df_final[nome_benchmark], label=nome_benchmark, color="#b30000", linewidth=1.2)
+fig.patch.set_facecolor("none")
+ax.set_facecolor("none")
+ax.plot(df_final.index, df_final["Carteira"], label="Carteira", color="#ffffff", linewidth=1.2)
+ax.plot(df_final.index, df_final[nome_benchmark], label=nome_benchmark, color="#d99c3a", linewidth=1.2)
 ax.yaxis.set_visible(False)
 ax.set_ylabel("")
 ax.set_xlabel("")
 for spine in ["top", "right", "left", "bottom"]:
     ax.spines[spine].set_visible(False)
-ax.grid(True, axis='x', linestyle="--", alpha=0.4)
-ax.set_title("Evolução Patrimonial", fontsize=10)
-ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9, frameon=False)
+ax.grid(True, axis='x', linestyle="--", alpha=0.4, color="#f5f5f5")
+ax.set_title("Evolução Patrimonial", fontsize=10, color="white")
+ax.tick_params(axis='x', colors='white')
+ax.tick_params(axis='y', colors='white')
+import matplotlib.dates as mdates
+ax.xaxis.set_major_formatter(mdates.DateFormatter("%b/%y"))
+ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9, frameon=False, labelcolor="white")
 fig.tight_layout()
 
-# ========== EXIBIÇÃO ==========
 fig_path = "grafico_rentabilidade_bluemetrix.png"
-fig.savefig(fig_path, dpi=300, bbox_inches="tight")
+fig.savefig(fig_path, dpi=300, bbox_inches="tight", facecolor=fig.get_facecolor())
 plt.close()
 
+def aplicar_estilo(df):
+    return df.style.set_properties(
+        **{
+            'background-color': '#1e1e1e',
+            'color': '#f5f5f5',
+            'border-color': '#444'
+        }
+    ).set_table_styles([
+        {'selector': 'th', 'props': [('font-size', '10px'), ('background-color', '#2c2c2c'), ('color', '#f5f5f5')]},
+        {'selector': 'td', 'props': [('font-size', '10px'), ('color', '#f5f5f5')]}
+    ])
+
 st.markdown("### 📈 Evolução Patrimonial")
-st.image(fig_path, use_container_width=True)
+st.image(fig_path, use_column_width=True)
 with open(fig_path, "rb") as f:
     st.download_button("⬇️ Baixar Gráfico em PNG", f, "grafico_bluemetrix.png", "image/png")
 
 st.markdown("### 📊 Tabela de Rentabilidade Consolidada")
-st.dataframe(
-    tabela_lamina.style.set_properties(
-        **{'background-color': '#1e1e1e', 'color': '#f5f5f5', 'border-color': '#444'}
-    ).set_table_styles([
-        {'selector': 'th', 'props': [('font-size', '10px'), ('background-color', '#2c2c2c'), ('color', '#f5f5f5')]},
-        {'selector': 'td', 'props': [('font-size', '10px'), ('color', '#f5f5f5')]}
-    ]),
-    use_container_width=True
-)
+st.dataframe(aplicar_estilo(tabela_lamina), use_container_width=True)
 
 st.markdown("### 📌 Indicadores Técnicos")
-st.dataframe(
-    indicadores.style.set_properties(
-        **{'background-color': '#1e1e1e', 'color': '#f5f5f5', 'border-color': '#444'}
-    ).set_table_styles([
-        {'selector': 'th', 'props': [('font-size', '10px'), ('background-color', '#2c2c2c'), ('color', '#f5f5f5')]},
-        {'selector': 'td', 'props': [('font-size', '10px'), ('color', '#f5f5f5')]}
-    ]),
-    use_container_width=True
-)
+st.dataframe(aplicar_estilo(indicadores), use_container_width=True)
