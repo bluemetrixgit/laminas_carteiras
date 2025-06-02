@@ -176,7 +176,7 @@ def aplicar_estilo(df):
     ])
 
 st.markdown("### 📈 Evolução Patrimonial")
-st.image(fig_path, use_column_width=True)
+st.image(fig_path, use_container_width=True)
 with open(fig_path, "rb") as f:
     st.download_button("⬇️ Baixar Gráfico em PNG", f, "grafico_bluemetrix.png", "image/png")
 
