@@ -156,7 +156,7 @@ ax.tick_params(axis='x', colors='black')
 ax.tick_params(axis='y', colors='white')
 import matplotlib.dates as mdates
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%b/%y"))
-ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9, frameon=False, labelcolor="white")
+ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9, frameon=False, labelcolor="black")
 fig.tight_layout()
 
 fig_path = "grafico_rentabilidade_bluemetrix.png"
