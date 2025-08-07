@@ -153,7 +153,7 @@ for spine in ["top", "right", "left", "bottom"]:
 ax.grid(True, axis='x', linestyle="--", alpha=0.4, color="#f5f5f5")
 ax.set_title("Evolução Patrimonial", fontsize=10, color="white")
 ax.tick_params(axis='x', colors='black')
-ax.tick_params(axis='y', colors='grey')
+ax.tick_params(axis='y', colors='black')
 import matplotlib.dates as mdates
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%b/%y"))
 ax.legend(loc="upper center", bbox_to_anchor=(0.5, -0.15), ncol=2, fontsize=9, frameon=False, labelcolor="black")
