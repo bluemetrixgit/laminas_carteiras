@@ -150,7 +150,7 @@ ax.set_ylabel("")
 ax.set_xlabel("")
 for spine in ["top", "right", "left", "bottom"]:
     ax.spines[spine].set_visible(False)
-ax.grid(True, axis='x', linestyle="--", alpha=0.4, color="#f5f5f5")
+ax.grid(True, axis='x', linestyle="--", alpha=0.3, color="#ffffff")
 ax.set_title("Evolução Patrimonial", fontsize=10, color="white")
 ax.tick_params(axis='x', colors='black')
 ax.tick_params(axis='y', colors='black')
