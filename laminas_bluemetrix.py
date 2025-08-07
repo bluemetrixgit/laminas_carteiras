@@ -152,7 +152,7 @@ for spine in ["top", "right", "left", "bottom"]:
     ax.spines[spine].set_visible(False)
 ax.grid(True, axis='x', linestyle="--", alpha=0.4, color="#f5f5f5")
 ax.set_title("Evolução Patrimonial", fontsize=10, color="white")
-ax.tick_params(axis='x', colors='white')
+ax.tick_params(axis='x', colors='black')
 ax.tick_params(axis='y', colors='white')
 import matplotlib.dates as mdates
 ax.xaxis.set_major_formatter(mdates.DateFormatter("%b/%y"))
