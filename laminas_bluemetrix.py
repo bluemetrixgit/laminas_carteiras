@@ -61,14 +61,16 @@ fim = data_fim.strftime("%Y-%m-%d")
 valor_inicial = 100000
 
 pesos_cripto = {
-    "BTC-USD": 0.65, "ETH-USD": 0.10, "SOL-USD": 0.025,
-    "LTC-USD": 0.025, "XRP-USD": 0.025, "ADA-USD": 0.05,
-    "DOGE-USD": 0.025, "USDT-USD": 0.05, "CASH": 0.05,
+    "BTC-USD": 0.60, "ETH-USD": 0.10, "SOL-USD": 0.08,
+    "ONDO-USD": 0.03, "RENDER-USD": 0.02, "XRP-USD": 0.02,
+    "IMX-USD": 0.02, "AAVE-USD": 0.02, "LINK-USD": 0.02,
+    "LTC-USD": 0.02, "CASH": 0.07,
 }
 pesos_internacional = {
-    "AMZN": 0.10, "BK": 0.05, "BRK-B": 0.10, "CRM": 0.05,
-    "CSCO": 0.05, "CVX": 0.05, "GOOGL": 0.10, "IVV": 0.15,
-    "MSFT": 0.10, "NVDA": 0.08, "PYPL": 0.07, "SOXX": 0.10,
+    "AMZN": 0.07, "BK": 0.07, "BRK-B": 0.10, "BKNG": 0.05,
+    "CRM": 0.05, "CVX": 0.07, "GOOGL": 0.07, "IVV": 0.20,
+    "JNJ": 0.05, "META": 0.05, "MSFT": 0.05, "NVDA": 0.05,
+    "UBER": 0.07, "CASH": 0.05,
 }
 pesos = pesos_cripto if opcao_carteira == "Carteira Cripto" else pesos_internacional
 benchmark_ticker = "HASH11.SA" if opcao_carteira == "Carteira Cripto" else "^GSPC"
