@@ -101,6 +101,10 @@ benchmark_acum = benchmark_acum.loc[idx_comum]
 nome_benchmark = "HASH11" if opcao_carteira == "Carteira Cripto" else "S&P500"
 df_final = pd.DataFrame({"Carteira": carteira.squeeze(), nome_benchmark: benchmark_acum.squeeze()}).dropna()
 
+# >>> CORREÇÃO <<<
+df_final.index = pd.to_datetime(df_final.index, errors="coerce")
+df_final = df_final.sort_index()
+
 df_mensal = df_final.resample("M").last()
 ret_mensal = df_mensal.pct_change().dropna() * 100
 ult_12m = ret_mensal.iloc[-12:]
