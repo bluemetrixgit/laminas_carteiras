@@ -105,7 +105,7 @@ df_final = pd.DataFrame({"Carteira": carteira.squeeze(), nome_benchmark: benchma
 df_final.index = pd.to_datetime(df_final.index, errors="coerce")
 df_final = df_final.sort_index()
 
-df_mensal = df_final.resample("M").last()
+df_mensal = df_final.resample("ME").last()
 ret_mensal = df_mensal.pct_change().dropna() * 100
 ult_12m = ret_mensal.iloc[-12:]
 ult_12m.index = pd.to_datetime(ult_12m.index).strftime("%b/%y")
