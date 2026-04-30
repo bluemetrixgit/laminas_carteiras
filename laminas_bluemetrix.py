@@ -67,10 +67,10 @@ pesos_cripto = {
     "LTC-USD": 0.02, "CASH": 0.07,
 }
 pesos_internacional = {
-    "AMZN": 0.07, "BK": 0.07, "BRK-B": 0.10, "BKNG": 0.05,
-    "CRM": 0.05, "CVX": 0.07, "GOOGL": 0.07, "IVV": 0.20,
-    "JNJ": 0.05, "META": 0.05, "MSFT": 0.05, "NVDA": 0.05,
-    "UBER": 0.07, "CASH": 0.05,
+    "AMZN": 0.07, "BK": 0.05, "BRK-B": 0.8, "BKNG": 0.05,
+    "CVX": 0.07, "GOOGL": 0.07, "IVV": 0.15, "JPM": 0.05,
+    "JNJ": 0.05, "META": 0.05, "MSFT": 0.05, "NVDA": 0.03,
+    "UBER": 0.07, "V": 0.05, "KO": 0.05, "CASH": 0.06,
 }
 pesos = pesos_cripto if opcao_carteira == "Carteira Cripto" else pesos_internacional
 benchmark_ticker = "HASH11.SA" if opcao_carteira == "Carteira Cripto" else "^GSPC"
