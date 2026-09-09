@@ -3,3 +3,5 @@ yfinance
 pandas
 numpy
 matplotlib
+chardet
+starlette==0.47.3
