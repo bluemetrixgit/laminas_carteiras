@@ -126,7 +126,7 @@ pesos_cripto = {
 
 pesos_internacional = {
     "AMZN": 0.07,
-    "BK": 0.05,
+    "BNY": 0.05,
     "BRK-B": 0.80,
     "BKNG": 0.05,
     "CVX": 0.07,
